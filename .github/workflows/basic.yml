@@ -35,21 +35,47 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         run: |
-          # Verificar si el repositorio existe
-          echo "Verificando repositorio $DOCKERHUB_USERNAME/${{ env.REPO_NAME }}..."
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" -u "$DOCKERHUB_USERNAME:$DOCKERHUB_TOKEN" "https://hub.docker.com/v2/repositories/$DOCKERHUB_USERNAME/${{ env.REPO_NAME }}/")
+          # Verificar autenticación primero
+          echo "Verificando credenciales..."
+          AUTH_CHECK=$(curl -s -u "$DOCKERHUB_USERNAME:$DOCKERHUB_TOKEN" "https://hub.docker.com/v2/users/$DOCKERHUB_USERNAME/" -o /dev/null -w "%{http_code}")
+    
+          if [ "$AUTH_CHECK" -ne 200 ]; then
+            echo "❌ Error de autenticación! Verifica:"
+            echo "- Token válido y con permisos WRITE"
+            echo "- Username correcto"
+            exit 1
+          fi
 
-          if [ "$STATUS" -eq 404 ]; then
+          echo "Verificando repositorio $DOCKERHUB_USERNAME/${{ env.REPO_NAME }}..."
+          REPO_STATUS=$(curl -s -u "$DOCKERHUB_USERNAME:$DOCKERHUB_TOKEN" \
+            "https://hub.docker.com/v2/repositories/$DOCKERHUB_USERNAME/${{ env.REPO_NAME }}/" \
+            -o /dev/null \
+            -w "%{http_code}")
+
+          if [ "$REPO_STATUS" -eq 404 ]; then
             echo "Creando repositorio..."
-            curl -X POST -u "$DOCKERHUB_USERNAME:$DOCKERHUB_TOKEN" \
-              -H "Content-Type: application/json" \
-              -d '{"name": "${{ env.REPO_NAME }}", "is_private": false}' \
-              https://hub.docker.com/v2/repositories/
-            echo "✅ Repositorio creado"
-          elif [ "$STATUS" -eq 200 ]; then
+            CREATE_RESPONSE=$(curl -s -X POST \
+            -u "$DOCKERHUB_USERNAME:$DOCKERHUB_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"namespace\": \"$DOCKERHUB_USERNAME\", \"name\": \"${{ env.REPO_NAME }}\", \"is_private\": false}" \
+            "https://hub.docker.com/v2/repositories/" \
+            -w "\n%{http_code}")
+
+          HTTP_STATUS=$(echo "$CREATE_RESPONSE" | tail -n1)
+          RESPONSE_BODY=$(echo "$CREATE_RESPONSE" | sed '$d')
+
+          if [ "$HTTP_STATUS" -eq 201 ]; then
+            echo "✅ Repositorio creado exitosamente"
+          else
+            echo "❌ Error creando repositorio: HTTP $HTTP_STATUS"
+            echo "Respuesta del servidor: $RESPONSE_BODY"
+            exit 1
+          fi
+
+          elif [ "$REPO_STATUS" -eq 200 ]; then
             echo "✅ El repositorio ya existe"
           else
-            echo "❌ Error inesperado: HTTP $STATUS"
+            echo "❌ Error inesperado: HTTP $REPO_STATUS"
             exit 1
           fi
       

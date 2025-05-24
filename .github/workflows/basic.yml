@@ -67,7 +67,6 @@ jobs:
               -d '{"namespace":"'"$DOCKERHUB_USERNAME"'","name":"'"${{ env.REPO_NAME }}"'","is_private":false}')
 
             echo "✅ Repositorio creado"
-          fi
           elif [ "$REPO_STATUS" -eq 200 ]; then
             echo "✅ El repositorio ya existe"
           else

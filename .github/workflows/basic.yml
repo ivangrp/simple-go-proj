@@ -81,5 +81,5 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: |
-            ${{ env.REGISTRY }}/${{ env.REPO_NAME }}:latest
-            ${{ env.REGISTRY }}/${{ env.REPO_NAME }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:${{ github.sha }}

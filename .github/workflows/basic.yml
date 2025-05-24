@@ -52,6 +52,8 @@ jobs:
             -o /dev/null \
             -w "%{http_code}")
 
+          echo "Estado del repositorio: $REPO_STATUS"
+
           if [ "$REPO_STATUS" -eq 404 ]; then
             echo "Logeando..."
             JWT_TOKEN=$(curl -s -X POST https://hub.docker.com/v2/users/login/ \
@@ -63,26 +65,13 @@ jobs:
               -H "Content-Type: application/json" \
               -H "Authorization: JWT $JWT_TOKEN" \
               -d '{"namespace":"'"$DOCKERHUB_USERNAME"'","name":"'"${{ env.REPO_NAME }}"'","is_private":false}')
+
+            echo "✅ Repositorio creado"
           fi
-
-          HTTP_STATUS=$(echo "$CREATE_RESPONSE" | tail -n1)
-          RESPONSE_BODY=$(echo "$CREATE_RESPONSE" | sed '$d')
-
-          echo "Código de estado HTTP: $HTTP_STATUS"
-          echo "Cuerpo de la respuesta: $RESPONSE_BODY"
-
-          if [ "$HTTP_STATUS" -eq 201 ]; then
-            echo "✅ Repositorio creado exitosamente"
-          else
-            echo "❌ Error creando repositorio: HTTP $HTTP_STATUS"
-            echo "Respuesta del servidor: $RESPONSE_BODY"
-            exit 1
-          fi
-
-          elif [ "$REPO_STATUS" -eq 200 ]; then
+          elif [ "$STATUS" -eq 200 ]; then
             echo "✅ El repositorio ya existe"
           else
-            echo "❌ Error inesperado: HTTP $REPO_STATUS"
+            echo "❌ Error inesperado: HTTP $STATUS"
             exit 1
           fi
       

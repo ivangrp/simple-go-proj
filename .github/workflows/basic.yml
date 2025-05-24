@@ -68,10 +68,10 @@ jobs:
 
             echo "✅ Repositorio creado"
           fi
-          elif [ "$STATUS" -eq 200 ]; then
+          elif [ "$REPO_STATUS" -eq 200 ]; then
             echo "✅ El repositorio ya existe"
           else
-            echo "❌ Error inesperado: HTTP $STATUS"
+            echo "❌ Error inesperado: HTTP $REPO_STATUS"
             exit 1
           fi
       

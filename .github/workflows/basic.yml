@@ -68,6 +68,9 @@ jobs:
           HTTP_STATUS=$(echo "$CREATE_RESPONSE" | tail -n1)
           RESPONSE_BODY=$(echo "$CREATE_RESPONSE" | sed '$d')
 
+          echo "Código de estado HTTP: $HTTP_STATUS"
+          echo "Cuerpo de la respuesta: $RESPONSE_BODY"
+
           if [ "$HTTP_STATUS" -eq 201 ]; then
             echo "✅ Repositorio creado exitosamente"
           else

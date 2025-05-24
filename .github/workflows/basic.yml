@@ -53,16 +53,17 @@ jobs:
             -w "%{http_code}")
 
           if [ "$REPO_STATUS" -eq 404 ]; then
-            echo "Logeando"
+            echo "Logeando..."
             JWT_TOKEN=$(curl -s -X POST https://hub.docker.com/v2/users/login/ \
               -H "Content-Type: application/json" \
               -d '{"username":"'"$DOCKERHUB_USERNAME"'","password":"'"$DOCKERHUB_TOKEN"'"}' | jq -r '.token')
 
             echo "Creando repositorio..."
-            CREATE_RESPONSE=$(curl -X POST https://hub.docker.com/v2/repositories/ \
+            CREATE_RESPONSE=$(curl -s -X POST https://hub.docker.com/v2/repositories/ \
               -H "Content-Type: application/json" \
               -H "Authorization: JWT $JWT_TOKEN" \
-              -d '{"namespace":"ivangrp","name":"${{ env.REPO_NAME }}","is_private":false}')
+              -d '{"namespace":"'"$DOCKERHUB_USERNAME"'","name":"'"${{ env.REPO_NAME }}"'","is_private":false}')
+          fi
 
           HTTP_STATUS=$(echo "$CREATE_RESPONSE" | tail -n1)
           RESPONSE_BODY=$(echo "$CREATE_RESPONSE" | sed '$d')

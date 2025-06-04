@@ -87,7 +87,7 @@ jobs:
   deploy-dev:
     
     needs: [build-and-push]
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/feature/*'
 
     runs-on: ubuntu-latest
     environment: 

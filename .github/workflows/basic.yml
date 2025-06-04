@@ -104,3 +104,13 @@ jobs:
           # Aquí puedes agregar los comandos específicos para desplegar tu aplicación
           # Por ejemplo, ejecutar un contenedor Docker con la imagen descargada
           docker run -d --name my_app_dev ${{ env.REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:${{ github.sha }}
+
+  deploy-prod:
+    needs: [build-and-push]
+    if: github.ref == 'refs/heads/main'
+    
+    runs-on: ubuntu-latest
+    environment: 
+      name: prod
+      url: https://github.com/${{ github.repository }}/releases/tag/v${{ vars.PROD_VERSION }}
+      

@@ -31,19 +31,19 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      # # Configura Docker para usar gcloud como helper
-      # - name: Set up Docker
-      #   run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+      # Configura Docker para usar gcloud como helper
+      - name: Set up Docker
+        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
 
-      # # Construye la imagen Docker
-      # - name: Build Docker image
-      #   run: |
-      #     docker build -t ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT }}/${{ env.REPOSITORY_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+      # Construye la imagen Docker
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT }}/${{ env.REPOSITORY_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
 
-      # # Sube la imagen a Artifact Registry
-      # - name: Push Docker Image
-      #   run: |
-      #     docker push ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT }}/${{ env.REPOSITORY_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+      # Sube la imagen a Artifact Registry
+      - name: Push Docker Image
+        run: |
+          docker push ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT }}/${{ env.REPOSITORY_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy-dev:
     

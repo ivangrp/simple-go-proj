@@ -58,7 +58,7 @@ jobs:
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-central1-docker.pkg.dev/ivan-ar/$REPO_NAME/$IMAGE_NAME::SHA
+          docker push us-central1-docker.pkg.dev/ivan-ar/$REPO_NAME/$IMAGE_NAME:SHA
 
   deploy-dev:
     

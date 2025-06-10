@@ -10,8 +10,9 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: docker.io
   REPO_NAME: ${{ github.event.repository.name }}
+  REGION: us-central1
+  IMAGE_NAME: v1.0.0
 
 jobs:
   build-and-push:
@@ -31,19 +32,32 @@ jobs:
         with:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
 
-      # Configura Docker para usar gcloud como helper
-      - name: Set up Docker
-        run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
+      - name: Ensure Artifact Registry repository exists
+        run: |
+          if ! gcloud artifacts repositories describe $REPO_NAME \
+            --location=$REGION \
+            --project=$PROJECT_ID > /dev/null 2>&1; then
+            echo "Repositorio $REPO_NAME no existe. Creándolo..."
+            gcloud artifacts repositories create $REPO_NAME \
+              --repository-format=docker \
+              --location=$REGION \
+              --description="Repositorio creado desde GitHub Actions"
+          else
+            echo "Repositorio $REPO_NAME ya existe."
+          fi
 
-      # Construye la imagen Docker
+      # Configura Docker para usar gcloud como helper
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT }}/${{ env.REPOSITORY_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+          docker build -t us-central1-docker.pkg.dev/ivan-ar/$REPO_NAME/$IMAGE_NAME:SHA
 
-      # Sube la imagen a Artifact Registry
-      - name: Push Docker Image
+      - name: Push Docker image to Artifact Registry
         run: |
-          docker push ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT }}/${{ env.REPOSITORY_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push us-central1-docker.pkg.dev/ivan-ar/$REPO_NAME/$IMAGE_NAME::SHA
 
   deploy-dev:
     

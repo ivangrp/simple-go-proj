@@ -12,6 +12,7 @@ on:
 env:
   REPO_NAME: ${{ github.event.repository.name }}
   REGION: us-central1
+  PROJECT_ID: minsaitproject
   IMAGE_NAME: v1.0.0
 
 jobs:

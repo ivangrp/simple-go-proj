@@ -54,11 +54,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t us-central1-docker.pkg.dev/ivan-ar/$REPO_NAME/$IMAGE_NAME:SHA .
+          docker build -t us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:SHA .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push us-central1-docker.pkg.dev/ivan-ar/$REPO_NAME/$IMAGE_NAME:SHA
+          docker push us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME:SHA
 
   deploy-dev:
     

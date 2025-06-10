@@ -72,15 +72,17 @@ jobs:
       url: https://github.com/${{ github.repository }}/releases/tag/v${{ vars.DEV_VERSION }}
     
     steps:
-      - name: Download Docker image
+      - name: Deploy to Cloud Run
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:${{ github.sha }}
-      - name: Deploy to development environment
-        run: |
-          echo "Desplegando en el entorno de desarrollo..."
-          # Aquí puedes agregar los comandos específicos para desplegar tu aplicación
-          # Por ejemplo, ejecutar un contenedor Docker con la imagen descargada
-          docker run -d --name my_app_dev ${{ env.REGISTRY }}/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:${{ github.sha }}
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          IMAGE_URI=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:$COMMIT_SHA
+
+          gcloud run deploy ${{ env.IMAGE_NAME }} \
+            --image $IMAGE_URI \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --project ${{ env.PROJECT_ID }}
 
   deploy-prod:
     needs: [build-and-push]

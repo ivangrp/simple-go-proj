@@ -62,7 +62,7 @@ jobs:
               ;;
           esac
 
-          echo "Entorno: $enviroment"<
+          echo "Entorno: $enviroment"
 
 
       - name: Ensure Artifact Registry repository exists

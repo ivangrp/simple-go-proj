@@ -37,16 +37,16 @@ jobs:
       - name: Set up project
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "branchname=${{ github.event.pull_request.base.ref }}" >> "$GITHUB_ENV"
+            echo "BRANCH_NAME=${{ github.event.pull_request.base.ref }}" >> "$GITHUB_ENV"
           else
-            echo "branchname=${{ github.ref_name }}" >> "$GITHUB_ENV"
+            echo "BRANCH_NAME=${{ github.ref_name }}" >> "$GITHUB_ENV"
           fi  
           
           echo "La rama referencia es: ${{ github.ref_name }}"
-          echo "La rama es: ${{ env.branchname }}"
+          echo "La rama es: ${{ env.BRANCH_NAME }}"
 
           # Evaluacion de la rama con case
-          case $branchname in
+          case $BRANCH_NAME in
             main)
               enviroment="prod"
               ;;

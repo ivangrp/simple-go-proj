@@ -44,7 +44,7 @@ jobs:
           
           # Validación básica
           if [ -z "$branchname" ]; then
-            echo "Uso: $0 <nombre-de-rama>"
+            echo "Uso: $0 $branchname"
             exit 1
           fi
 

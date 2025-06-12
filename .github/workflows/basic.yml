@@ -41,6 +41,8 @@ jobs:
           else
             echo "branchname=${{ github.ref_name }}" >> "$GITHUB_ENV"
           fi  
+          
+          echo "La rama es: $branchname"
 
           # Evaluacion de la rama con case
           case $branchname in

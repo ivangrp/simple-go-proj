@@ -43,7 +43,7 @@ jobs:
           fi  
           
           echo "La rama referencia es: ${{ github.ref_name }}"
-          echo "La rama es: $branchname"
+          echo "La rama es: ${{ env.branchname }}"
 
           # Evaluacion de la rama con case
           case $branchname in

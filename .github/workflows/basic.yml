@@ -41,12 +41,6 @@ jobs:
           else
             echo "branchname=${{ github.ref_name }}" >> "$GITHUB_ENV"
           fi  
-          
-          # Validación básica
-          if [ -z "$branchname" ]; then
-            echo "Uso: $0 $branchname"
-            exit 1
-          fi
 
           # Evaluacion de la rama con case
           case $branchname in

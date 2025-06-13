@@ -60,22 +60,9 @@ jobs:
               ;;
           esac
 
-          echo "Entorno: $enviroment"
+          echo "IMAGE_TAG=$IMAGE_TAG-$ENV" >> "$GITHUB_ENV"
 
-
-      # - name: Ensure Artifact Registry repository exists
-      #   run: |
-      #     if ! gcloud artifacts repositories describe $REPO_NAME_AR \
-      #       --location=$REGION \
-      #       --project=$PROJECT_ID > /dev/null 2>&1; then
-      #       echo "Repositorio $REPO_NAME_AR no existe. Creándolo..."
-      #       gcloud artifacts repositories create $REPO_NAME_AR \
-      #         --repository-format=docker \
-      #         --location=$REGION \
-      #         --description="Repositorio creado desde GitHub Actions"
-      #     else
-      #       echo "Repositorio $REPO_NAME_AR ya existe."
-      #     fi
+          echo "TAG: $IMAGE_TAG"
 
       # Configura Docker para usar gcloud como helper
       - name: Configure Docker for Artifact Registry
@@ -84,11 +71,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG-$ENV .
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG-$ENV
+          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG
 
   deploy-dev:
     
@@ -112,7 +99,7 @@ jobs:
       - name: Desplegar a Cloud Run
         run: |
           gcloud run deploy $IMAGE_NAME \
-            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG-$ENV \
+            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG \
             --region=$REGION \
             --platform=managed \
             --allow-unauthenticated \

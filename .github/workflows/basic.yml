@@ -14,6 +14,7 @@ env:
   REGION: us-central1
   PROJECT_ID: minsaitproject
   IMAGE_NAME: ${{ github.event.repository.name }}
+  TAG: v.1.0.0
 
 jobs:
   build-and-push:
@@ -48,10 +49,10 @@ jobs:
           # Evaluacion de la rama con case
           case $BRANCH_NAME in
             main)
-              echo "ENV=" >> "$GITHUB_ENV"
+              echo "IMAGE_TAG=$TAG" >> "$GITHUB_ENV"
               ;;
             develop|feature/*)
-              echo "ENV=dev" >> "$GITHUB_ENV"
+              echo "IMAGE_TAG=$TAG-dev" >> "$GITHUB_ENV"
               ;;
             *)
               echo "Rama no reconocida. Debe ser 'main' o 'develop'."
@@ -59,7 +60,7 @@ jobs:
               ;;
           esac
 
-          echo "IMAGE_TAG=v.1.0.0-$ENV" >> "$GITHUB_ENV"
+          echo "El tag de la imagen es: $IMAGE_TAG"
 
       # Configura Docker para usar gcloud como helper
       - name: Configure Docker for Artifact Registry
@@ -78,7 +79,7 @@ jobs:
       - name: Confirmar imagen
         run: |
           echo "Desplegando imagen:"
-          echo "$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG-$ENV"
+          echo "$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG"
 
   deploy-dev:
     

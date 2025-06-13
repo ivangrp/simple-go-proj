@@ -63,19 +63,19 @@ jobs:
           echo "Entorno: $enviroment"
 
 
-      - name: Ensure Artifact Registry repository exists
-        run: |
-          if ! gcloud artifacts repositories describe $REPO_NAME_AR \
-            --location=$REGION \
-            --project=$PROJECT_ID > /dev/null 2>&1; then
-            echo "Repositorio $REPO_NAME_AR no existe. Creándolo..."
-            gcloud artifacts repositories create $REPO_NAME_AR \
-              --repository-format=docker \
-              --location=$REGION \
-              --description="Repositorio creado desde GitHub Actions"
-          else
-            echo "Repositorio $REPO_NAME_AR ya existe."
-          fi
+      # - name: Ensure Artifact Registry repository exists
+      #   run: |
+      #     if ! gcloud artifacts repositories describe $REPO_NAME_AR \
+      #       --location=$REGION \
+      #       --project=$PROJECT_ID > /dev/null 2>&1; then
+      #       echo "Repositorio $REPO_NAME_AR no existe. Creándolo..."
+      #       gcloud artifacts repositories create $REPO_NAME_AR \
+      #         --repository-format=docker \
+      #         --location=$REGION \
+      #         --description="Repositorio creado desde GitHub Actions"
+      #     else
+      #       echo "Repositorio $REPO_NAME_AR ya existe."
+      #     fi
 
       # Configura Docker para usar gcloud como helper
       - name: Configure Docker for Artifact Registry

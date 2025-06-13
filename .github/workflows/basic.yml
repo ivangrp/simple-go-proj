@@ -100,6 +100,10 @@ jobs:
       - name: Configurar SDK de GCP
         uses: google-github-actions/setup-gcloud@v2
 
+      - name: Confirmar imagen
+        run: |
+          echo "$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG"
+
       - name: Desplegar a Cloud Run
         run: |
           gcloud run deploy $IMAGE_NAME \

@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-        IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        IMAGE_TAG: ${{ steps.gcp_project.outputs.IMAGE_TAG }}
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -45,6 +45,7 @@ jobs:
           fi  
           
       - name: Set up GCP project
+        id: gcp_project
         run: |
           echo "La rama es: $BRANCH_NAME"
 

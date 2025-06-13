@@ -111,7 +111,7 @@ jobs:
 
       - name: Desplegar a Cloud Run
         run: |
-          gcloud run deploy NOMBRE_SERVICIO \
+          gcloud run deploy $IMAGE_NAME \
             --image=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG-$ENV \
             --region=$REGION \
             --platform=managed \

@@ -10,10 +10,10 @@ on:
   workflow_dispatch:
 
 env:
+  REPO_NAME_AR: ivan-artifact-repo
   REPO_NAME: ${{ github.event.repository.name }}
   REGION: us-central1
   PROJECT_ID: minsaitproject
-  IMAGE_NAME: v1.0.0
   IMAGE_TAG: v1.0.0
 
 jobs:
@@ -49,7 +49,7 @@ jobs:
           # Evaluacion de la rama con case
           case $BRANCH_NAME in
             main)
-              echo "ENV=prod" >> "$GITHUB_ENV"
+              echo "ENV=" >> "$GITHUB_ENV"
               ;;
             develop|feature/*)
               echo "ENV=dev" >> "$GITHUB_ENV"
@@ -65,16 +65,16 @@ jobs:
 
       - name: Ensure Artifact Registry repository exists
         run: |
-          if ! gcloud artifacts repositories describe $REPO_NAME \
+          if ! gcloud artifacts repositories describe $REPO_NAME_AR \
             --location=$REGION \
             --project=$PROJECT_ID > /dev/null 2>&1; then
-            echo "Repositorio $REPO_NAME no existe. Creándolo..."
-            gcloud artifacts repositories create $REPO_NAME \
+            echo "Repositorio $REPO_NAME_AR no existe. Creándolo..."
+            gcloud artifacts repositories create $REPO_NAME_AR \
               --repository-format=docker \
               --location=$REGION \
               --description="Repositorio creado desde GitHub Actions"
           else
-            echo "Repositorio $REPO_NAME ya existe."
+            echo "Repositorio $REPO_NAME_AR ya existe."
           fi
 
       # Configura Docker para usar gcloud como helper
@@ -84,11 +84,11 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME-$ENV:$IMAGE_TAG .
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG-$ENV .
 
       - name: Push Docker image to Artifact Registry
         run: |
-          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME-$ENV:$IMAGE_TAG
+          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG-$ENV
 
   deploy-dev:
     
@@ -112,7 +112,7 @@ jobs:
       - name: Desplegar a Cloud Run
         run: |
           gcloud run deploy NOMBRE_SERVICIO \
-            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/$IMAGE_NAME-$ENV:$IMAGE_TAG \
+            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG-$ENV \
             --region=$REGION \
             --platform=managed \
             --allow-unauthenticated \

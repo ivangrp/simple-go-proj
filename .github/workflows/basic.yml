@@ -75,6 +75,11 @@ jobs:
         run: |
           docker push $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG
 
+      - name: Confirmar imagen
+        run: |
+          echo "Desplegando imagen:"
+          echo "$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG-$ENV"
+
   deploy-dev:
     
     needs: [build-and-push]

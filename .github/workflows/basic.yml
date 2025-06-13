@@ -14,7 +14,6 @@ env:
   REGION: us-central1
   PROJECT_ID: minsaitproject
   IMAGE_NAME: ${{ github.event.repository.name }}
-  IMAGE_TAG: v1.0.0
 
 jobs:
   build-and-push:
@@ -60,9 +59,7 @@ jobs:
               ;;
           esac
 
-          echo "IMAGE_TAG=$IMAGE_TAG-$ENV" >> "$GITHUB_ENV"
-
-          echo "TAG: $IMAGE_TAG"
+          echo "IMAGE_TAG=v.1.0.0-$ENV" >> "$GITHUB_ENV"
 
       # Configura Docker para usar gcloud como helper
       - name: Configure Docker for Artifact Registry
@@ -71,6 +68,7 @@ jobs:
 
       - name: Build Docker image
         run: |
+          echo "TAG: $IMAGE_TAG"
           docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG .
 
       - name: Push Docker image to Artifact Registry

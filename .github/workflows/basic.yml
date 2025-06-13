@@ -21,9 +21,9 @@ jobs:
 
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
     outputs:
-        IMAGE_TAG: ${{ steps.gcp_project.outputs.IMAGE_TAG }}
+      IMAGE_TAG: ${{ steps.gcp_project.outputs.IMAGE_TAG }}
+
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -81,6 +81,7 @@ jobs:
         run: |
           echo "Desplegando imagen:"
           echo "$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG"
+          
 
   deploy-dev:
     
@@ -103,12 +104,12 @@ jobs:
 
       - name: Confirmar imagen
         run: |
-          echo "$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG"
+          echo "$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:${{ needs.build-and-push.outputs.IMAGE_TAG }}"
 
       - name: Desplegar a Cloud Run
         run: |
           gcloud run deploy $IMAGE_NAME \
-            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:$IMAGE_TAG \
+            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$REPO_NAME_AR/$IMAGE_NAME:${{ needs.build-and-push.outputs.IMAGE_TAG }} \
             --region=$REGION \
             --platform=managed \
             --allow-unauthenticated \
